@@ -1,0 +1,50 @@
+research_gpt_assistant/
+├── README.md
+├── requirements.txt
+├── config/
+│   ├── __init__.py
+│   ├── settings.py                    # API keys, model configurations
+│   └── prompts.py                     # All prompt templates
+├── data/
+│   ├── raw/                           # Original PDF files
+│   ├── processed/                     # Extracted and cleaned text
+│   └── sample_papers/                 # Sample research papers for testing
+├── src/
+│   ├── __init__.py
+│   ├── document_processor.py          # PDF extraction and text processing
+│   ├── mistral_client.py             # Mistral API integration
+│   ├── prompt_engine.py              # Advanced prompting strategies
+│   ├── research_agent.py             # AI agent workflows
+│   ├── similarity_engine.py          # Document similarity and search
+│   ├── evaluation.py                 # System performance evaluation
+│   └── utils.py                      # Helper functions
+├── agents/
+│   ├── __init__.py
+│   ├── base_agent.py                 # Base agent class
+│   ├── summarizer_agent.py           # Document summarization agent
+│   ├── qa_agent.py                   # Question-answering agent
+│   ├── research_workflow_agent.py    # Complete research workflow
+│   └── verification_agent.py         # Answer verification and editing
+├── interface/
+│   ├── __init__.py
+│   ├── streamlit_app.py              # Main Streamlit interface
+│   └── components.py                 # UI components
+├── tests/
+│   ├── __init__.py
+│   ├── test_document_processor.py
+│   ├── test_prompt_engine.py
+│   ├── test_agents.py
+│   └── sample_queries.py             # Test queries for evaluation
+├── results/
+│   ├── evaluations/                  # Performance metrics
+│   ├── outputs/                      # Generated summaries and analyses
+│   └── logs/                         # System logs
+├── notebooks/
+│   ├── 01_data_exploration.ipynb     # Explore document processing
+│   ├── 02_prompt_testing.ipynb       # Test different prompting strategies
+│   ├── 03_agent_development.ipynb    # Develop and test agents
+│   └── 04_evaluation_analysis.ipynb  # Analyze system performance
+└── docs/
+    ├── project_report.md             # Final project documentation
+    ├── prompting_strategies.md       # Documentation of prompt techniques
+    └── demo_scenarios.md             # Example use cases
