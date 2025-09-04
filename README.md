@@ -298,7 +298,7 @@ Results are automatically saved to:
 
 ## License
 
-This project is created for educational purposes as part of an AI/ML capstone project. Please ensure compliance with your institution's academic integrity policies.
+This project is created for educational purposes as part of an AI/ML capstone project by Rama Kattunga.
 
 ## Acknowledgments
 
