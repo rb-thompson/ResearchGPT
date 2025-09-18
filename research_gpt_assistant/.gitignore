@@ -1,0 +1,9 @@
+# ignore environment variable files
+.env
+.env.local
+
+# ignore Python cache files
+__pycache__/
+
+# ignore virtual environment directories
+venv/
