@@ -10,3 +10,7 @@ venv/
 
 # ignore log files
 *.log
+
+# ignore test data and results
+test_data/
+test_results/
