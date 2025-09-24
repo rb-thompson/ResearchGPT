@@ -195,3 +195,183 @@ class QAAgent(BaseAgent):
             return self.answer_analytical_question(question)
         else:
             return self.answer_factual_question(question)
+        
+class AnalysisAgent(BaseAgent):
+    """Agent for research analysis tasks."""
+    def __init__(self, research_assistant):
+        """Initialize AnalysisAgent with research assistant reference."""
+        super().__init__(research_assistant)
+        self.agent_name = "AnalysisAgent"
+        self.logger = logging.getLogger("AnalysisAgent")
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
+        ))
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+        self.logger.info("🔍 AnalysisAgent ready to uncover insights!")
+
+    def execute_task(self, task_input):
+        """Execute analysis task based on input topic."""
+        self.logger.info(f"🔍 Analyzing topic: {task_input.get('topic', '')}")
+        try:
+            topic = task_input.get("topic", "")
+            relevant_chunks = self.assistant.doc_processor.find_similar_chunks(topic, top_k=5)
+            context = "\n".join([chunk[0] for chunk in relevant_chunks])
+            analysis_prompt = f"""
+            Analyze the following context for:
+            - Key trends in the research
+            - Research gaps or unanswered questions
+            - Suggested future directions
+            Context: {context}
+            """
+            analysis = self._call_mistral(analysis_prompt)
+            result = {
+                "topic": topic,
+                "analysis": analysis,
+                "sources": [chunk[2] for chunk in relevant_chunks]
+            }
+            self.logger.info("🌟 Analysis generated!")
+            return result
+        except Exception as e:
+            self.logger.error(f"❌ Error analyzing: {str(e)}")
+            return {"error": str(e)}
+        
+class ResearchWorkflowAgent(BaseAgent):
+    """Agent to conduct end-to-end research sessions."""
+    def __init__(self, research_assistant):
+        """Initialize ResearchWorkflowAgent with research assistant reference."""
+        super().__init__(research_assistant)
+        self.agent_name = "ResearchWorkflowAgent"
+        self.logger = logging.getLogger("ResearchWorkflowAgent")
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
+        ))
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+        self.summarizer = SummarizationAgent(research_assistant)
+        self.qa_agent = QAAgent(research_assistant)
+        self.analysis_agent = AnalysisAgent(research_assistant)
+        self.logger.info("🧠 ResearchWorkflowAgent ready to run research sessions!")
+
+    def conduct_research_session(self, research_topic):
+        """Conduct a full research session on a given topic."""
+        self.logger.info(f"🧠 Starting research session on: {research_topic}")
+        session_results = {
+            "research_topic": research_topic,
+            "generated_questions": [],
+            "document_analysis": {},
+            "answers": [],
+            "research_gaps": []
+        }
+        try:
+            # Step 1: Generate questions
+            questions_prompt = f"Generate 3-5 specific research questions for: {research_topic}"
+            questions = self._call_mistral(questions_prompt).split("\n")
+            session_results["generated_questions"] = [q.strip() for q in questions if q.strip()]
+            self.logger.info(f"❓ Generated {len(session_results['generated_questions'])} questions")
+
+            # Step 2: Summarize documents
+            relevant_docs = self.assistant.doc_processor.find_similar_chunks(research_topic, top_k=10)
+            doc_ids = list(set([doc[2] for doc in relevant_docs]))
+            if doc_ids:
+                session_results["document_analysis"] = self.summarizer.create_literature_overview(doc_ids)
+                self.logger.info("📚 Document analysis completed")
+
+            # Step 3: Answer questions
+            for question in session_results["generated_questions"]:
+                qa_task = {"question": question, "type": "analytical"}
+                answer = self.qa_agent.execute_task(qa_task)
+                session_results["answers"].append(answer)
+                self.logger.info(f"❓ Answered: {question}")
+
+            # Step 4: Identify gaps
+            analysis_task = {"topic": research_topic}
+            gaps = self.analysis_agent.execute_task(analysis_task)
+            session_results["research_gaps"] = gaps.get("analysis", "")
+            self.logger.info("🔍 Research gaps identified")
+
+            self.logger.info("🌟 Research session completed!")
+            return session_results
+        except Exception as e:
+            self.logger.error(f"❌ Error in research session: {str(e)}")
+            return {"error": str(e)}
+
+    def execute_task(self, task_input):
+        """Execute research workflow based on input topic."""
+        if "research_topic" in task_input:
+            return self.conduct_research_session(task_input["research_topic"])
+        else:
+            self.logger.error("❌ Invalid task input")
+            return {"error": "Invalid task input for ResearchWorkflowAgent"}
+        
+class AgentOrchestrator:
+    """Orchestrates multiple agents to handle complex research workflows."""
+    def __init__(self, research_assistant):
+        """Initialize AgentOrchestrator with research assistant reference."""
+        self.assistant = research_assistant
+        self.logger = logging.getLogger("AgentOrchestrator")
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
+        ))
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+        self.agents = {
+            "summarizer": SummarizationAgent(research_assistant),
+            "qa": QAAgent(research_assistant),
+            "analysis": AnalysisAgent(research_assistant),
+            "workflow": ResearchWorkflowAgent(research_assistant)
+        }
+        self.shared_memory = {}
+        self.logger.info("🎶 AgentOrchestrator ready to conduct the symphony!")
+
+    def route_task(self, task_type, task_input):
+        """Route a task to the appropriate agent based on task type."""
+        self.logger.info(f"🚦 Routing task type: {task_type}")
+        try:
+            agent = self.agents.get(task_type)
+            if not agent:
+                self.logger.error(f"❌ Unknown task type: {task_type}")
+                return {"error": f"Unknown task type: {task_type}"}
+            result = agent.execute_task(task_input)
+            self.shared_memory[task_type] = result
+            self.logger.info(f"🎉 Task routed to {agent.agent_name}")
+            return result
+        except Exception as e:
+            self.logger.error(f"❌ Error routing task: {str(e)}")
+            return {"error": str(e)}
+
+    def execute_complex_workflow(self, workflow_description):
+        """Execute a complex research workflow involving multiple agents."""
+        self.logger.info(f"🎬 Executing complex workflow: {workflow_description}")
+        try:
+            # Simple parsing: assume description specifies tasks
+            tasks = []
+            if "summarize" in workflow_description.lower():
+                tasks.append(("summarizer", {"doc_ids": list(self.assistant.doc_processor.documents.keys())}))
+            if "answer" in workflow_description.lower():
+                tasks.append(("qa", {"question": workflow_description, "type": "analytical"}))
+            if "analyze" in workflow_description.lower():
+                tasks.append(("analysis", {"topic": workflow_description}))
+            
+            results = []
+            for task_type, task_input in tasks:
+                result = self.route_task(task_type, task_input)
+                results.append(result)
+            
+            # Aggregate results
+            aggregate_prompt = f"Combine these results into a coherent response: {results}"
+            final_result = self.agents["workflow"]._call_mistral(aggregate_prompt)
+            
+            workflow_results = {
+                "workflow_description": workflow_description,
+                "steps_executed": [task_type for task_type, _ in tasks],
+                "final_result": final_result
+            }
+            self.logger.info("🌟 Complex workflow completed!")
+            return workflow_results
+        except Exception as e:
+            self.logger.error(f"❌ Error in workflow: {str(e)}")
+            return {"error": str(e)}
