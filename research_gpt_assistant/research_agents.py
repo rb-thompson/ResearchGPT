@@ -1,23 +1,51 @@
 from abc import ABC, abstractmethod
+from typing import Dict, Any, List
 import logging
+from logging import StreamHandler, Formatter
+
+def setup_logger(name: str) -> logging.Logger:
+    """Configure a logger with retro-style ANSI color formatting.
+
+    Args:
+        name (str): Logger name.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    logger = logging.getLogger(name)
+    logger.handlers = []  # Prevent duplicate handlers
+    handler = StreamHandler()
+    handler.setFormatter(Formatter(
+        "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
+    ))
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    return logger
 
 class BaseAgent(ABC):
-    def __init__(self, research_assistant):
-        """Initialize BaseAgent with research assistant reference."""
+    """Abstract base class for all research agents."""
+    
+    def __init__(self, research_assistant: Any) -> None:
+        """Initialize BaseAgent with research assistant reference.
+
+        Args:
+            research_assistant: Instance of ResearchGPTAssistant for API access.
+        """
         self.assistant = research_assistant
-        self.agent_name = "BaseAgent"
-        self.logger = logging.getLogger(self.agent_name)
-        # Clear existing handlers to prevent duplicates
-        self.logger.handlers = []
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.agent_name: str = "BaseAgent"
+        self.logger: logging.Logger = setup_logger(self.agent_name)
         self.logger.info("🟢 BaseAgent initialized! Ready to rock!")
 
-    def _call_mistral(self, prompt: str, temperature: float = None) -> str:
+    def _call_mistral(self, prompt: str, temperature: float | None = None) -> str:
+        """Call Mistral API with the given prompt.
+
+        Args:
+            prompt (str): Input prompt for the Mistral API.
+            temperature (float, optional): Sampling temperature. Defaults to config value.
+
+        Returns:
+            str: API response or error message.
+        """
         if temperature is None:
             temperature = self.assistant.config.TEMPERATURE
         self.logger.info("🚀 Sending prompt to Mistral API...")
@@ -35,25 +63,35 @@ class BaseAgent(ABC):
             return f"Error: {str(e)}"
 
     @abstractmethod
-    def execute_task(self, task_input):
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute the agent's task.
+
+        Args:
+            task_input: Task parameters.
+
+        Returns:
+            Dict containing task results or error message.
+        """
         raise NotImplementedError("Each agent must implement execute_task method")
 
 class SummarizationAgent(BaseAgent):
-    def __init__(self, research_assistant):
+    """Agent for document summarization tasks."""
+    
+    def __init__(self, research_assistant: Any) -> None:
         super().__init__(research_assistant)
         self.agent_name = "SummarizerAgent"
-        self.logger = logging.getLogger(self.agent_name)
-        self.logger.handlers = []  # Clear handlers
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = setup_logger(self.agent_name)
         self.logger.info("📝 SummarizerAgent ready to summarize!")
 
-    def summarize_document(self, doc_id):
-        """Summarize a single document by its ID."""
+    def summarize_document(self, doc_id: str) -> Dict[str, Any]:
+        """Summarize a specific document.
+
+        Args:
+            doc_id (str): Document identifier.
+
+        Returns:
+            Dict containing summary, word count, and key topics or error message.
+        """
         self.logger.info(f"📄 Summarizing document: {doc_id}")
         try:
             document_text = "\n".join(self.assistant.doc_processor.documents.get(doc_id, {}).get("chunks", []))
@@ -86,8 +124,15 @@ class SummarizationAgent(BaseAgent):
             self.logger.error(f"❌ Error summarizing: {str(e)}")
             return {"error": str(e)}
 
-    def create_literature_overview(self, doc_ids):
-        """Create a literature overview from multiple document IDs."""
+    def create_literature_overview(self, doc_ids: List[str]) -> Dict[str, Any]:
+        """Create a literature overview from multiple documents.
+
+        Args:
+            doc_ids (List[str]): List of document identifiers.
+
+        Returns:
+            Dict containing overview, number of papers analyzed, and individual summaries.
+        """
         self.logger.info(f"📚 Creating literature overview for {len(doc_ids)} documents")
         individual_summaries = []
         for doc_id in doc_ids:
@@ -113,8 +158,7 @@ class SummarizationAgent(BaseAgent):
         self.logger.info("🌟 Literature overview completed!")
         return result
 
-    def execute_task(self, task_input):
-        """Execute summarization task based on input type."""
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
         if "doc_id" in task_input:
             return self.summarize_document(task_input["doc_id"])
         elif "doc_ids" in task_input:
@@ -122,23 +166,25 @@ class SummarizationAgent(BaseAgent):
         else:
             self.logger.error("❌ Invalid task input")
             return {"error": "Invalid task input for SummarizerAgent"}
-        
+
 class QAAgent(BaseAgent):
-    def __init__(self, research_assistant):
+    """Agent for question-answering tasks."""
+    
+    def __init__(self, research_assistant: Any) -> None:
         super().__init__(research_assistant)
         self.agent_name = "QAAgent"
-        self.logger = logging.getLogger(self.agent_name)
-        self.logger.handlers = []  # Clear handlers
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = setup_logger(self.agent_name)
         self.logger.info("❓ QAAgent ready to answer questions!")
 
-    def answer_factual_question(self, question):
-        """Answer a factual question based on document context."""
+    def answer_factual_question(self, question: str) -> Dict[str, Any]:
+        """Answer factual questions based on document corpus.
+
+        Args:
+            question (str): Factual question to answer.
+
+        Returns:
+            Dict containing answer, sources, and confidence score.
+        """
         self.logger.info(f"❓ Answering factual question: {question}")
         try:
             relevant_chunks = self.assistant.doc_processor.find_similar_chunks(question, top_k=3)
@@ -165,8 +211,15 @@ class QAAgent(BaseAgent):
             self.logger.error(f"❌ Error answering: {str(e)}")
             return {"error": str(e)}
 
-    def answer_analytical_question(self, question):
-        """Answer an analytical question using chain-of-thought reasoning."""
+    def answer_analytical_question(self, question: str) -> Dict[str, Any]:
+        """Answer analytical questions requiring reasoning.
+
+        Args:
+            question (str): Analytical question to answer.
+
+        Returns:
+            Dict containing analysis and reasoning type.
+        """
         self.logger.info(f"🤔 Answering analytical question: {question}")
         try:
             relevant_chunks = self.assistant.doc_processor.find_similar_chunks(question, top_k=5)
@@ -182,31 +235,31 @@ class QAAgent(BaseAgent):
             self.logger.error(f"❌ Error analyzing: {str(e)}")
             return {"error": str(e)}
 
-    def execute_task(self, task_input):
-        """Execute QA task based on question type."""
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
         question = task_input.get("question", "")
         question_type = task_input.get("type", "factual")
         if question_type == "analytical":
             return self.answer_analytical_question(question)
-        else:
-            return self.answer_factual_question(question)
-        
+        return self.answer_factual_question(question)
+
 class AnalysisAgent(BaseAgent):
-    def __init__(self, research_assistant):
+    """Agent for generating research insights and gaps."""
+    
+    def __init__(self, research_assistant: Any) -> None:
         super().__init__(research_assistant)
         self.agent_name = "AnalysisAgent"
-        self.logger = logging.getLogger(self.agent_name)
-        self.logger.handlers = []  # Clear handlers
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = setup_logger(self.agent_name)
         self.logger.info("🔍 AnalysisAgent ready to uncover insights!")
 
-    def execute_task(self, task_input):
-        """Execute analysis task based on input topic."""
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze a topic for trends, gaps, and future directions.
+
+        Args:
+            task_input: Dictionary with 'topic' key.
+
+        Returns:
+            Dict containing analysis and sources.
+        """
         self.logger.info(f"🔍 Analyzing topic: {task_input.get('topic', '')}")
         try:
             topic = task_input.get("topic", "")
@@ -230,26 +283,28 @@ class AnalysisAgent(BaseAgent):
         except Exception as e:
             self.logger.error(f"❌ Error analyzing: {str(e)}")
             return {"error": str(e)}
-        
+
 class ResearchWorkflowAgent(BaseAgent):
-    def __init__(self, research_assistant):
+    """Agent for managing complete research workflows."""
+    
+    def __init__(self, research_assistant: Any) -> None:
         super().__init__(research_assistant)
         self.agent_name = "ResearchWorkflowAgent"
-        self.logger = logging.getLogger(self.agent_name)
-        self.logger.handlers = []  # Clear handlers
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = setup_logger(self.agent_name)
         self.summarizer = SummarizationAgent(research_assistant)
         self.qa_agent = QAAgent(research_assistant)
         self.analysis_agent = AnalysisAgent(research_assistant)
         self.logger.info("🧠 ResearchWorkflowAgent ready to run research sessions!")
 
-    def conduct_research_session(self, research_topic):
-        """Conduct a full research session on a given topic."""
+    def conduct_research_session(self, research_topic: str) -> Dict[str, Any]:
+        """Conduct a complete research session on a topic.
+
+        Args:
+            research_topic (str): Topic to research.
+
+        Returns:
+            Dict containing questions, document analysis, answers, and research gaps.
+        """
         self.logger.info(f"🧠 Starting research session on: {research_topic}")
         session_results = {
             "research_topic": research_topic,
@@ -291,36 +346,42 @@ class ResearchWorkflowAgent(BaseAgent):
             self.logger.error(f"❌ Error in research session: {str(e)}")
             return {"error": str(e)}
 
-    def execute_task(self, task_input):
-        """Execute research workflow based on input topic."""
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
         if "research_topic" in task_input:
             return self.conduct_research_session(task_input["research_topic"])
-        else:
-            self.logger.error("❌ Invalid task input")
-            return {"error": "Invalid task input for ResearchWorkflowAgent"}
-        
+        self.logger.error("❌ Invalid task input")
+        return {"error": "Invalid task input for ResearchWorkflowAgent"}
+
 class AgentOrchestrator:
-    def __init__(self, research_assistant):
+    """Orchestrates multiple agents for complex research tasks."""
+    
+    def __init__(self, research_assistant: Any) -> None:
+        """Initialize orchestrator with agent registry and shared memory.
+
+        Args:
+            research_assistant: Instance of ResearchGPTAssistant for API access.
+        """
         self.assistant = research_assistant
-        self.logger = logging.getLogger("AgentOrchestrator")
-        self.logger.handlers = []  # Clear handlers
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(
-            "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger = setup_logger("AgentOrchestrator")
         self.agents = {
             "summarizer": SummarizationAgent(research_assistant),
             "qa": QAAgent(research_assistant),
             "analysis": AnalysisAgent(research_assistant),
             "workflow": ResearchWorkflowAgent(research_assistant)
         }
-        self.shared_memory = {}
+        self.shared_memory: Dict[str, Any] = {}
         self.logger.info("🎶 AgentOrchestrator ready to conduct the symphony!")
 
-    def route_task(self, task_type, task_input):
-        """Route a task to the appropriate agent based on task type."""
+    def route_task(self, task_type: str, task_input: Dict[str, Any]) -> Dict[str, Any]:
+        """Route tasks to appropriate agents.
+
+        Args:
+            task_type (str): Type of task ('summarizer', 'qa', 'analysis', 'workflow').
+            task_input: Task parameters.
+
+        Returns:
+            Dict containing task results or error message.
+        """
         self.logger.info(f"🚦 Routing task type: {task_type}")
         try:
             agent = self.agents.get(task_type)
@@ -335,28 +396,70 @@ class AgentOrchestrator:
             self.logger.error(f"❌ Error routing task: {str(e)}")
             return {"error": str(e)}
 
-    def execute_complex_workflow(self, workflow_description):
-        """Execute a complex research workflow involving multiple agents."""
+    def resolve_conflicts(self, outputs: List[Dict[str, Any]]) -> str:
+        """Resolve conflicts between agent outputs.
+
+        Args:
+            outputs: List of agent outputs.
+
+        Returns:
+            str: Resolved output or error message.
+        """
+        self.logger.info("🛠 Resolving conflicts in agent outputs")
+        try:
+            conflict_prompt = f"Identify and resolve contradictions in these outputs: {outputs}"
+            resolved_output = self.agents["workflow"]._call_mistral(conflict_prompt)
+            self.logger.info("🌟 Conflicts resolved!")
+            return resolved_output
+        except Exception as e:
+            self.logger.error(f"❌ Error resolving conflicts: {str(e)}")
+            return f"Error: {str(e)}"
+
+    def execute_complex_workflow(self, workflow_description: str) -> Dict[str, Any]:
+        """Execute a complex multi-agent workflow.
+
+        Args:
+            workflow_description (str): Natural language description of the workflow.
+
+        Returns:
+            Dict containing workflow description, executed steps, and final result.
+        """
         self.logger.info(f"🎬 Executing complex workflow: {workflow_description}")
         try:
-            # Simple parsing: assume description specifies tasks
+            # Parse workflow description with Mistral
+            parse_prompt = f"""
+            Break down this workflow into unique tasks (summarizer, qa, analysis, workflow).
+            Ensure each task type is included only once unless explicitly required multiple times.
+            Workflow: {workflow_description}
+            """
+            task_list = self.agents["workflow"]._call_mistral(parse_prompt).split("\n")
             tasks = []
-            if "summarize" in workflow_description.lower():
-                tasks.append(("summarizer", {"doc_ids": list(self.assistant.doc_processor.documents.keys())}))
-            if "answer" in workflow_description.lower():
-                tasks.append(("qa", {"question": workflow_description, "type": "analytical"}))
-            if "analyze" in workflow_description.lower():
-                tasks.append(("analysis", {"topic": workflow_description}))
-            
+            seen_tasks = set()
+            for task in task_list:
+                task = task.strip()
+                if not task:
+                    continue
+                if "summarize" in task.lower() and "summarizer" not in seen_tasks:
+                    tasks.append(("summarizer", {"doc_ids": list(self.assistant.doc_processor.documents.keys())}))
+                    seen_tasks.add("summarizer")
+                elif ("question" in task.lower() or "answer" in task.lower()) and "qa" not in seen_tasks:
+                    tasks.append(("qa", {"question": workflow_description, "type": "analytical"}))
+                    seen_tasks.add("qa")
+                elif "analyze" in task.lower() and "analysis" not in seen_tasks:
+                    tasks.append(("analysis", {"topic": workflow_description}))
+                    seen_tasks.add("analysis")
+
             results = []
             for task_type, task_input in tasks:
                 result = self.route_task(task_type, task_input)
                 results.append(result)
-            
-            # Aggregate results
-            aggregate_prompt = f"Combine these results into a coherent response: {results}"
-            final_result = self.agents["workflow"]._call_mistral(aggregate_prompt)
-            
+
+            # Check for conflicts
+            if len(results) > 1:
+                final_result = self.resolve_conflicts(results)
+            else:
+                final_result = results[0] if results else {"error": "No tasks executed"}
+
             workflow_results = {
                 "workflow_description": workflow_description,
                 "steps_executed": [task_type for task_type, _ in tasks],
