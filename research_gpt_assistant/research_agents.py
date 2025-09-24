@@ -2,24 +2,22 @@ from abc import ABC, abstractmethod
 import logging
 
 class BaseAgent(ABC):
-    """Abstract base class for research agents.
-    Provides common functionality for all agents."""
     def __init__(self, research_assistant):
         """Initialize BaseAgent with research assistant reference."""
         self.assistant = research_assistant
         self.agent_name = "BaseAgent"
-        # Retro-style logging with colors
-        self.logger = logging.getLogger("BaseAgent")
+        self.logger = logging.getLogger(self.agent_name)
+        # Clear existing handlers to prevent duplicates
+        self.logger.handlers = []
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
-        ))  # Neon green, cyan, yellow
+        ))
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.INFO)
         self.logger.info("🟢 BaseAgent initialized! Ready to rock!")
 
     def _call_mistral(self, prompt: str, temperature: float = None) -> str:
-        """Call Mistral API"""
         if temperature is None:
             temperature = self.assistant.config.TEMPERATURE
         self.logger.info("🚀 Sending prompt to Mistral API...")
@@ -38,16 +36,14 @@ class BaseAgent(ABC):
 
     @abstractmethod
     def execute_task(self, task_input):
-        """Abstract method for agent tasks."""
         raise NotImplementedError("Each agent must implement execute_task method")
-    
+
 class SummarizationAgent(BaseAgent):
-    """Agent for document summarization tasks."""
     def __init__(self, research_assistant):
-        """Initialize SummarizationAgent with research assistant reference."""
         super().__init__(research_assistant)
         self.agent_name = "SummarizerAgent"
-        self.logger = logging.getLogger("SummarizerAgent")
+        self.logger = logging.getLogger(self.agent_name)
+        self.logger.handlers = []  # Clear handlers
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
@@ -128,12 +124,11 @@ class SummarizationAgent(BaseAgent):
             return {"error": "Invalid task input for SummarizerAgent"}
         
 class QAAgent(BaseAgent):
-    """Agent for QA tasks."""
     def __init__(self, research_assistant):
-        """Initialize QAAgent with research assistant reference."""
         super().__init__(research_assistant)
         self.agent_name = "QAAgent"
-        self.logger = logging.getLogger("QAAgent")
+        self.logger = logging.getLogger(self.agent_name)
+        self.logger.handlers = []  # Clear handlers
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
@@ -197,12 +192,11 @@ class QAAgent(BaseAgent):
             return self.answer_factual_question(question)
         
 class AnalysisAgent(BaseAgent):
-    """Agent for research analysis tasks."""
     def __init__(self, research_assistant):
-        """Initialize AnalysisAgent with research assistant reference."""
         super().__init__(research_assistant)
         self.agent_name = "AnalysisAgent"
-        self.logger = logging.getLogger("AnalysisAgent")
+        self.logger = logging.getLogger(self.agent_name)
+        self.logger.handlers = []  # Clear handlers
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
@@ -238,12 +232,11 @@ class AnalysisAgent(BaseAgent):
             return {"error": str(e)}
         
 class ResearchWorkflowAgent(BaseAgent):
-    """Agent to conduct end-to-end research sessions."""
     def __init__(self, research_assistant):
-        """Initialize ResearchWorkflowAgent with research assistant reference."""
         super().__init__(research_assistant)
         self.agent_name = "ResearchWorkflowAgent"
-        self.logger = logging.getLogger("ResearchWorkflowAgent")
+        self.logger = logging.getLogger(self.agent_name)
+        self.logger.handlers = []  # Clear handlers
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
@@ -307,11 +300,10 @@ class ResearchWorkflowAgent(BaseAgent):
             return {"error": "Invalid task input for ResearchWorkflowAgent"}
         
 class AgentOrchestrator:
-    """Orchestrates multiple agents to handle complex research workflows."""
     def __init__(self, research_assistant):
-        """Initialize AgentOrchestrator with research assistant reference."""
         self.assistant = research_assistant
         self.logger = logging.getLogger("AgentOrchestrator")
+        self.logger.handlers = []  # Clear handlers
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
