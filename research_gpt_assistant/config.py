@@ -76,7 +76,7 @@ class Config:
 
             # Formatter
             formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m",
                 datefmt="%Y-%m-%d %I:%M %p",
             )
             console_handler.setFormatter(formatter)
