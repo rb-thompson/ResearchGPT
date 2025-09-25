@@ -1,0 +1,18 @@
+{
+  "doc_id": "2509.09655v1",
+  "summary": "### **Summary of \"Feasibility-Guided Fair Adaptive Offline Reinforcement Learning for Medicaid Population Health Management\"** **Research Question/Hypothesis:** The study investigates whether **Feasibility-Guided Fair Adaptive Reinforcement Learning (FG-FARL)** can improve **safety and fairness** in Medicaid population health management by calibrating per-group safety thresholds while equalizing fairness targets (coverage or harm) across protected subgroups (e.g., age, sex, race). **Methodology:** - **Dataset:** De-identified Medicaid patient trajectories with actions (e.g., phone calls, home visits), states (demographics, utilization), and rewards (adverse events as negative rewards). - **Approach:** FG-FARL combines **offline RL, conformal safety sets, and fairness constraints**: 1. **Safety Model:** A logistic regression-based risk model predicts adverse events. 2. **Fairness Modes:** - **Coverage Mode:** Equalizes safe-state coverage across subgroups. - **Harm Mode:** Caps harm rates within safe sets. 3. **Policy Learning:** A preference policy is trained only on states deemed safe, ensuring interpretability and auditability. **Key Findings:** - FG-FARL achieves **comparable value** to baselines (Behavior Cloning, HACO) while improving fairness metrics. - **Example:** In coverage mode, FG-FARL equalized outreach access across age groups, reducing disparities in engagement. - **Harm reduction:** In harm mode, FG-FARL capped adverse event rates within safe sets, particularly for high-risk subgroups (e.g., behavioral health patients). **Conclusions & Limitations:** - **Conclusions:** FG-FARL demonstrates",
+  "word_count": 200,
+  "key_topics": [
+    "Here are the 3-5 key topics extracted from the summary in a numbered list:",
+    "1. **Feasibility-Guided Fair Adaptive Reinforcement Learning (FG-FARL)** – A novel approach combining offline RL, conformal safety sets, and fairness constraints to improve Medicaid population health management.",
+    "2. **Safety and Fairness in Healthcare** – The study focuses on balancing safety (adverse event prevention) and fairness (equalizing outcomes across protected subgroups like age, sex, and race).",
+    "3. **Methodology: Offline RL, Safety Models, and Fairness Constraints** – The approach includes:",
+    "- A logistic regression-based risk model for adverse event prediction.",
+    "- Two fairness modes (coverage and harm) to ensure equitable outcomes.",
+    "- Policy learning restricted to safe states for interpretability.",
+    "4. **Key Findings: Improved Fairness and Safety** – FG-FARL outperforms baselines by:",
+    "- Equalizing outreach access (e.g., reducing age-based disparities).",
+    "- Capping harm rates for high-risk subgroups (e.g., behavioral health patients).",
+    "5. **Limitations and Future Directions** – While effective, the study acknowledges constraints (e.g., dataset limitations) and suggests further validation in real-world settings."
+  ]
+}

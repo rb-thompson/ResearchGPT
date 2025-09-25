@@ -37,8 +37,8 @@ class DocumentProcessor:
             nltk.download("punkt")
         self.vectorizer = TfidfVectorizer(
             stop_words="english",
-            max_df=0.85,
-            min_df=2,
+            max_df=1.0,
+            min_df=1,
             strip_accents="unicode",
             lowercase=True,
         )
@@ -142,14 +142,15 @@ class DocumentProcessor:
             return doc_id
         cleaned_text = self.preprocess_text(raw_text)
         chunks = self.chunk_text(cleaned_text)
-        metadata = {
+        # Store metadata directly in the document dict
+        self.documents[doc_id] = {
             "title": doc_id.replace("_", " ").title(),
+            "chunks": chunks,
             "file_path": str(pdf_path),
             "length": len(cleaned_text),
             "num_chunks": len(chunks),
             "created_at": pd.Timestamp.now().isoformat(),
         }
-        self.documents[doc_id] = {"title": metadata["title"], "chunks": chunks, "metadata": metadata}
         self.logger.info(f"Processed document {doc_id} with {len(chunks)} chunks")
         return doc_id
 
@@ -210,8 +211,7 @@ class DocumentProcessor:
         stats = {
             "num_documents": len(self.documents),
             "total_chunks": total_chunks,
-            "average_length": sum(doc_data["metadata"]["length"] for doc_data in self.documents.values())
-            / len(self.documents),
+            "average_length": sum(doc_data["length"] for doc_data in self.documents.values()) / len(self.documents),
             "average_chunk_length": (
                 sum(len(chunk) for doc_data in self.documents.values() for chunk in doc_data["chunks"])
                 / total_chunks
