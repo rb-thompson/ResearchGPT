@@ -1,0 +1,53 @@
+{
+            'chain_of_thought': """
+            You are a helpful assistant. Answer the following query using chain-of-thought reasoning.
+            Let's think about this step by step...
+            Query: {query}
+            Context: {context}
+            Step 1: Understand the question.
+            Step 2: Analyze the context.
+            Step 3: Reason towards the answer.
+            Final Answer:
+            """,
+            'self_consistency': """
+            Generate 3 diverse reasoning paths to answer the query, then select the most consistent answer.
+            Query: {query}
+            Context: {context}
+            Reasoning Path 1:
+            Reasoning Path 2:
+            Reasoning Path 3:
+            Most consistent answer:
+            """,
+            'react_research': """
+            You are a researcher using ReAct: Thought, Action, Observation.
+            Actions available: Search (query documents), Analyze (analyze info), Summarize (summarize findings), Conclude (final answer).
+            Query: {query}
+            Start with Thought.
+            """,
+            'document_summary': """
+            Summarize the key findings, methodology, and conclusions from the following document chunks:
+            Chunks: {chunks}
+            Key Findings:
+            Methodology:
+            Conclusions:
+            """,
+            'qa_with_context': """
+            Answer the query based solely on the provided context from research papers.
+            If the answer is not in the context, say 'Information not found'.
+            Query: {query}
+            Context: {context}
+            Answer:
+            """,
+            'verify_answer': """
+            Verify the following answer for relevance, accuracy, and completeness based on the query and context.
+            Suggest improvements if needed.
+            Query: {query}
+            Answer: {answer}
+            Context: {context}
+            Relevance (1-10):
+            Accuracy (1-10):
+            Completeness (1-10):
+            Suggested Improvements:
+            Improved Answer:
+            """
+        }

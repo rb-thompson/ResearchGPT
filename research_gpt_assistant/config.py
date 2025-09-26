@@ -74,13 +74,18 @@ class Config:
             )
             file_handler.setLevel(logging.DEBUG)
 
-            # Formatter
+            # Formatters
             formatter = logging.Formatter(
-                "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m",
+                "\033[32m%(asctime)s - \033[1;36m%(name)s - \033[1;33m%(levelname)s - \033[1;32m%(message)s\033[0m"
+            )
+
+            log_formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                 datefmt="%Y-%m-%d %I:%M %p",
             )
+
             console_handler.setFormatter(formatter)
-            file_handler.setFormatter(formatter)
+            file_handler.setFormatter(log_formatter)
 
             # Add handlers
             self.logger.addHandler(console_handler)
