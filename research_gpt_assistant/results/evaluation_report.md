@@ -1,6 +1,6 @@
 
 # ResearchGPT Assistant - Evaluation Report
-Generated on 2025-09-25 05:48 PM
+Generated on 2025-10-01 12:25 PM
 
 ## Test Summary
 This report evaluates the Config, DocumentProcessor, ResearchGPTAssistant, and AI Agent components using 8 real PDF(s), mock documents, and Mistral API.
@@ -18,112 +18,98 @@ This report evaluates the Config, DocumentProcessor, ResearchGPTAssistant, and A
   "chain_of_thought": [
     {
       "query": "What are the main advantages of machine learning?",
-      "response": "Let's break down the query and context step by step to identify the main advantages of machine learning.\n\n### Step 1: Understand the Question\nThe query asks for the main advantages of machine learning. The context provided discusses neural networks as a subset of machine learning, highlighting their ability to handle large datasets, build complex models, and outperform other algorithms with sufficient data and tuning. The broader context also mentions the popularity of machine learning and its applications.\n\n### Step 2: Analyze the Context\nFrom the context, we can extract the following key points about machine learning (and neural networks as a specific example):\n1. **Handling Large Datasets**: Machine learning, especially neural networks, can process and learn from large amounts of data.\n2. **Complex Model Building**: It can build highly complex models that capture intricate patterns in data.\n3. **Performance**: With enough data, computation, and tuning, machine learning models (like neural networks) often outperform traditional algorithms for tasks like classification and regression.\n4. **Versatility**: The context implies that machine learning is widely applicable, not just in large-scale or world-changing examples, but also in more general problems.\n5. **Accessibility**: The mention of building a machine learning model without deep mathematical knowledge suggests that machine learning can be practical and accessible.\n\n### Step 3: Reason Towards the Answer\nBased on the above, the main advantages of machine learning can be summarized as:\n1. **Scalability**: Ability to handle",
-      "response_length": 1603,
-      "response_time": 2.64346981048584,
+      "response": "Let's break down the query and context step by step to identify the main advantages of machine learning.\n\n### Step 1: Understand the question\nThe query asks for the main advantages of machine learning. The context provides some hints, particularly focusing on neural networks and their ability to handle large amounts of data and build complex models.\n\n### Step 2: Analyze the context\nThe context highlights several key points about machine learning, especially neural networks:\n1. **Handling large amounts of data**: Neural networks (and machine learning in general) can capture information from large datasets.\n2. **Building complex models**: They can model intricate patterns in data.\n3. **Performance**: With enough data, computation, and tuning, neural networks often outperform other algorithms in tasks like classification and regression.\n4. **Versatility**: The context mentions that machine learning is not just for large-scale applications but can solve a variety of problems.\n5. **Accessibility**: The book suggests that machine learning can be learned without deep mathematical prerequisites, implying ease of use or democratization.\n\n### Step 3: Reason towards the answer\nFrom the context, the main advantages of machine learning can be distilled as:\n1. **Ability to handle large and complex datasets**: Machine learning algorithms, especially neural networks, excel at processing and learning from vast amounts of data.\n2. **High accuracy and performance**: With proper tuning and resources, machine learning models can achieve superior results compared to traditional algorithms.\n3. **Versatility",
+      "response_length": 1611,
+      "response_time": 3.6306135654449463,
       "api_calls": 1
     },
     {
       "query": "How do neural networks process information?",
-      "response": "Let's break down the query step by step using the provided context.\n\n### Step 1: Understand the question\nThe query asks: \"How do neural networks process information?\" This is a broad question about the fundamental mechanisms by which neural networks operate.\n\n### Step 2: Analyze the context\nThe context is an excerpt from a book or article about neural networks and deep learning. Key points from the context include:\n1. Neural networks are biologically inspired and can learn from observational data.\n2. They use a programming paradigm called backpropagation to learn.\n3. Information flows forward through layers (feedforward neural networks), with no loops.\n4. Deep learning involves multiple layers of neural networks, which are powerful for tasks like image recognition, speech recognition, and natural language processing.\n5. The context also mentions that different neural networks trained on the same data may produce different results.\n\n### Step 3: Reason towards the answer\nFrom the context, we can infer the following about how neural networks process information:\n1. **Layered Processing**: Neural networks process information through layers. Each layer takes the output of the previous layer as input (feedforward architecture). This means information flows in one direction, from input to output, without loops.\n2. **Learning via Backpropagation**: Neural networks learn by adjusting their internal parameters (weights) using backpropagation. This algorithm calculates the gradient of the loss function with respect to each weight and updates the weights to minimize the error.\n3.",
-      "response_length": 1594,
-      "response_time": 3.1801226139068604,
+      "response": "Let's break down the query step by step using the provided context.\n\n### Step 1: Understand the question\nThe query asks: \"How do neural networks process information?\" This is a broad question about the fundamental mechanisms by which neural networks handle and transform data.\n\n### Step 2: Analyze the context\nThe context provides several key points about neural networks and deep learning:\n1. Neural networks are biologically inspired and can learn from observational data.\n2. They use a programming paradigm called backpropagation to learn.\n3. Information flows through layers in a feedforward manner (no loops).\n4. Deep learning involves multiple layers (hence \"deep\") and is powerful for tasks like image recognition, speech recognition, and natural language processing.\n5. The context also mentions that neural networks can compute any function (universal approximation theorem) and that training multiple networks on the same data may yield different results due to initialization differences.\n\n### Step 3: Reason towards the answer\nFrom the context, we can infer the following about how neural networks process information:\n1. **Layered Processing**: Information is processed in layers, where the output of one layer becomes the input to the next. This is called a feedforward neural network.\n2. **Learning via Backpropagation**: Neural networks learn by adjusting their internal parameters (weights) through backpropagation, which involves:\n   - Forward pass: Computing the output for a given input.\n   - Backward pass: Calculating the error (",
+      "response_length": 1551,
+      "response_time": 3.1652519702911377,
       "api_calls": 1
     }
   ],
   "self_consistency": [
     {
       "query": "What are the main advantages of machine learning?",
-      "response": "The most consistent answer across the reasoning paths is:\n\n**The main advantages of machine learning are:**\n1. **High accuracy** (via complex models like neural networks).\n2. **Scalability** (handling large datasets and problems).\n3. **Versatility** (applicable to diverse tasks like classification and regression).\n4. **Automation** (reducing human effort in rule-coding).\n5. **Accessibility** (low barrier to entry for practitioners).\n\nThis synthesis aligns with both the neural network-specific strengths (Reasoning Path 1) and the broader ML benefits (Reasoning Path 2), ensuring consistency with the provided context.",
-      "response_length": 622,
-      "response_time": 4.574976444244385,
+      "response": "The most consistent answer across the three reasoning paths is:\n\n**\"The main advantages of machine learning are its ability to handle large-scale, high-dimensional data, its versatility and broad applicability, and its capacity for automated learning and improvement over time.\"**\n\nThis response synthesizes the key points from all three paths:\n1. **Technical/Performance-Based** (handling complex data, customizability).\n2. **Practical/Accessibility-Based** (versatility, accessibility).\n3. **Efficiency/Automation-Based** (automated learning, scalability).\n\nIt avoids overemphasizing any single aspect while covering the core strengths highlighted in the context.",
+      "response_length": 665,
+      "response_time": 8.106395244598389,
       "api_calls": 1
     },
     {
       "query": "How do neural networks process information?",
-      "response": "Error calling Mistral API: API error occurred: Status 429\n{\"object\":\"error\",\"message\":\"Service tier capacity exceeded for this model.\",\"type\":\"service_tier_capacity_exceeded\",\"param\":null,\"code\":\"3505\"}",
-      "response_length": 202,
-      "response_time": 5.595646381378174,
+      "response": "The most consistent answer from the provided reasoning paths is:\n\n**\"Neural networks process information by passing data through layers of interconnected nodes, where each layer applies transformations to extract higher-level features.\"**\n\n### Why?\n- **Reasoning Path 1** directly addresses the core mechanism of how neural networks process information (layer-by-layer transformations), which is a fundamental and universally applicable concept.\n- **Reasoning Path 2** focuses on learning (backpropagation), which is a specific aspect of training rather than the general processing of information.\n- **Reasoning Path 3** is incomplete (cut off mid-sentence) and lacks clarity, making it less reliable.\n\nThus, **Path 1** is the most consistent and complete explanation of how neural networks process information.",
+      "response_length": 811,
+      "response_time": 4.163565397262573,
       "api_calls": 1
     }
   ],
   "react_workflow": [
     {
       "query": "What are the main advantages of machine learning?",
-      "response": "Let's break this down systematically using the ReAct framework.\n\n**Thought:** To answer the query about the main advantages of machine learning, I need to gather comprehensive information. I'll start by searching for relevant documents or sources that discuss the benefits of machine learning.\n\n**Action:** Search(\"What are the main advantages of machine learning?\")\n\n**Observation:** The search yields several key advantages of machine learning, including:\n1. **Automation of repetitive tasks**: ML can handle large volumes of data and repetitive tasks efficiently.\n2. **Improved decision-making**: ML models can analyze complex data and provide insights that humans might miss.\n3. **Scalability**: ML systems can scale to handle large datasets and complex problems.\n4. **Adaptability**: ML models can learn and improve over time with new data.\n5. **Cost reduction**: Automating tasks with ML can reduce operational costs.\n6. **Personalization**: ML enables personalized recommendations and experiences (e.g., in e-commerce or healthcare).\n\n**Thought:** Now that I have the raw information, I need to analyze it to identify the most significant advantages and categorize them effectively.\n\n**Action:** Analyze(\"The main advantages of machine learning are automation, improved decision-making, scalability, adaptability, cost reduction, and personalization.\")\n\n**Observation:** The analysis reveals that the advantages can be grouped into:\n- **Efficiency**: Automation of tasks and scalability.\n- **Performance**: Improved decision-making and adapt",
+      "response": "Let's break this down systematically using the ReAct framework.\n\n**Thought:** To answer the query about the main advantages of machine learning, I need to gather comprehensive information. I'll start by searching for relevant documents or sources that discuss the benefits of machine learning.\n\n**Action:** Search(\"main advantages of machine learning\")\n\n**Observation:** The search yields several key advantages of machine learning, including:\n1. **Automation of repetitive tasks**: ML can handle large-scale, repetitive tasks efficiently.\n2. **Data-driven decision making**: ML models can analyze vast amounts of data to provide insights.\n3. **Improved accuracy**: ML algorithms can improve accuracy over time with more data.\n4. **Handling complex problems**: ML can solve problems that are too complex for traditional programming.\n5. **Adaptability**: ML models can adapt to new data and changing environments.\n6. **Cost reduction**: Automating tasks reduces the need for manual labor, cutting costs.\n7. **Personalization**: ML enables personalized recommendations (e.g., in e-commerce or streaming services).\n\n**Thought:** Now that I have a list of advantages, I should analyze them to ensure they are well-supported and not redundant.\n\n**Action:** Analyze(\"main advantages of machine learning\")\n\n**Observation:** The analysis confirms that the advantages are well-supported by research and industry applications. Some points overlap (e.g., automation and cost reduction), but they are distinct enough to be listed separately. The key advantages are:\n",
       "workflow_steps": 5,
-      "response_time": 18.369464874267578,
+      "response_time": 20.92065668106079,
       "api_calls": 6
     },
     {
       "query": "How do neural networks process information?",
-      "response": "Let's break down the process of how neural networks process information using the ReAct framework.\n\n### Step 1: Initial Thought\n**Thought:** Neural networks are computational models inspired by the human brain. They process information through layers of interconnected nodes (neurons). To understand this, I need to gather foundational knowledge about their structure and function.\n\n**Action:** Search(\"How do neural networks process information?\")\n\n**Observation:** Neural networks process information by receiving input data, transforming it through layers of neurons, and producing an output. The key steps involve:\n1. **Input Layer:** Receives raw data (e.g., images, text).\n2. **Hidden Layers:** Apply weights and biases to transform data (via activation functions).\n3. **Output Layer:** Produces the final result (e.g., classification, prediction).\n\n### Step 2: Deeper Analysis\n**Thought:** The observation mentions layers and transformations. I need to understand the role of weights, biases, and activation functions in processing information.\n\n**Action:** Analyze(\"Role of weights, biases, and activation functions in neural networks\")\n\n**Observation:**\n- **Weights:** Determine the strength of connections between neurons. They are adjusted during training to minimize errors.\n- **Biases:** Shift the activation function to fit the data better.\n- **Activation Functions:** Introduce non-linearity (e.g., ReLU, sigmoid) to enable complex pattern recognition.\n\n### Step 3: Sum",
+      "response": "Let's break down the process of how neural networks process information using the ReAct framework.\n\n### Step 1: Initial Thought\n**Thought:** Neural networks are computational models inspired by biological neural networks. They process information through layers of interconnected nodes (neurons). To understand this, I need to gather foundational knowledge about their structure and function.\n\n**Action:** Search(\"How do neural networks process information?\")\n\n**Observation:** The search yields results explaining that neural networks process information through layers of neurons, where each neuron receives inputs, applies weights, and passes the result through an activation function. The output is then passed to the next layer.\n\n### Step 2: Deeper Analysis\n**Thought:** The initial explanation is high-level. I need to understand the specific steps involved in processing information, such as forward propagation, activation functions, and learning mechanisms.\n\n**Action:** Analyze(\"Neural network processing steps: forward propagation, activation functions, learning mechanisms\")\n\n**Observation:** Neural networks process information in the following steps:\n1. **Input Layer:** Receives raw data (e.g., pixels for images, words for text).\n2. **Hidden Layers:** Each neuron computes a weighted sum of inputs, applies an activation function (e.g., ReLU, sigmoid), and passes the result to the next layer.\n3. **Output Layer:** Produces the final prediction or classification.\n4. **Learning:** Adjusts weights via backpropagation and optimization (e",
       "workflow_steps": 5,
-      "response_time": 22.678656578063965,
+      "response_time": 21.196882724761963,
       "api_calls": 6
     }
   ],
   "basic_qa": [
     {
       "query": "What are the main advantages of machine learning?",
-      "response": "Based on the provided context, the main advantages of machine learning, particularly neural networks, are:\n\n1. **Ability to capture information from large amounts of data**: Neural networks can process and learn from vast datasets, extracting meaningful patterns.\n2. **Building complex models**: They can construct highly intricate models that other machine learning algorithms may struggle to achieve.\n3. **Performance with sufficient resources**: Given enough computation time, data, and careful parameter tuning, neural networks often outperform other algorithms in tasks like classification and regression.\n\nThe context does not mention other general advantages of machine learning (e.g., automation, scalability, or adaptability), so those are not included in the answer.\n\n**Answer**: The main advantages of machine learning, as described in the context, are its ability to capture information from large datasets, build complex models, and outperform other algorithms with sufficient resources and tuning.",
-      "response_length": 1011,
-      "response_time": 2.178126096725464,
+      "response": "Based on the provided context, the main advantages of machine learning mentioned are:\n\n1. **Ability to capture information from large amounts of data** \u2013 Neural networks, a type of machine learning model, can process and learn from vast datasets.\n2. **Building complex models** \u2013 Machine learning, particularly neural networks, can create highly intricate models when given sufficient data, computation time, and parameter tuning.\n3. **Outperforming other algorithms** \u2013 With proper tuning, neural networks often achieve better performance than other machine learning methods for tasks like classification and regression.\n\nThe context does not provide additional advantages beyond these points. Therefore, other potential benefits (e.g., automation, scalability, or adaptability) are not mentioned in the given text.\n\n**Answer:** The main advantages of machine learning, as stated in the context, are its ability to capture information from large datasets, build complex models, and outperform other algorithms when properly tuned.",
+      "response_length": 1031,
+      "response_time": 3.088833808898926,
       "api_calls": 1
     },
     {
       "query": "How do neural networks process information?",
-      "response": "Information not found.\n\nThe provided context does not contain a detailed explanation of how neural networks process information. While it mentions neural networks, deep learning, and backpropagation, it does not explicitly describe the step-by-step process of how neural networks process information.",
-      "response_length": 300,
-      "response_time": 2.449127674102783,
+      "response": "Information not found.\n\nThe provided context does not explicitly explain how neural networks process information. While it mentions concepts like backpropagation, feedforward neural networks, and deep learning, it does not detail the step-by-step process of how neural networks process information.",
+      "response_length": 298,
+      "response_time": 0.6851987838745117,
       "api_calls": 1
     }
   ]
 }
 
 ## AI Agent Performance
-- Summarizer Agent: PASS
+- Summarizer Agent: FAIL
 - QA Agent (Factual): PASS
 - Analysis Agent: PASS
 - Workflow Agent: PASS
 - Complex Workflow (Orchestrator): PASS
 - Agent Details: {
-  "summarizer_agent": {
-    "success": true,
-    "duration": 4.651025295257568,
-    "quality_score": 8.0,
-    "word_count": 143,
-    "key_topics": [
-      "Here are 3-5 key topics extracted from the summary in a numbered list:",
-      "1. **AI Applications in NLP and Computer Vision** \u2013 Focus on chatbots, text analysis, and image recognition.",
-      "2. **Transformer Architectures** \u2013 Their role in improving AI model performance and efficiency.",
-      "3. **Research Findings** \u2013 Superiority of transformers over traditional models (e.g., RNNs) in NLP and computer vision tasks.",
-      "4. **Methodology** \u2013 Training transformer models using self-attention mechanisms on large datasets.",
-      "5. **Limitations and Future Work** \u2013 High computational costs, data dependency, and potential lightweight alternatives for edge devices."
-    ]
-  },
   "qa_agent": {
     "success": true,
-    "duration": 4.4758477210998535,
+    "duration": 4.246272563934326,
     "quality_score": 8.0,
-    "confidence": "The confidence score of **0.7** for this answer is well-justified based on the following factors:\n\n1. **Context Relevance (High, ~0.9)**:\n   - The answer directly addresses AI's dual role (tool vs. virtual worker) and its projected impact by 2030, aligning closely with the question's focus on AI's future capabilities and limitations.\n   - It integrates key themes like scaling trends, energy constraints, and real-world applications (e.g., drug development, LLMs), demonstrating deep contextual understanding.\n\n2. **Specificity (Moderate, ~0.8)**:\n   - The answer provides concrete examples (Epoch AI 57 benchmarks, predictive analytics in R&D) and quantifiable trends (compute/data/investment scaling), but lacks granular details (e.g., specific policy risks or regional disparities).\n   - The confidence score of 0.7 reflects this balance\u2014strong evidence but room for uncertainty in external factors (e.g., ethics, policy).\n\n3. **Source Reliability (High, ~0.8)**:\n   - Citing *AI in 2030* (Epoch AI reports) and scaling laws adds credibility, though the answer could benefit from more diverse sources (e.g., academic studies on energy constraints).\n\n**Final Confidence Estimate: 0.7** (Moderate-High)\n*Rationale*: The answer is highly relevant and specific but acknowledges"
+    "confidence": "The confidence score of **0.7** for this answer is well-justified based on the following factors:\n\n1. **Context Relevance (High, ~0.9)**:\n   - The answer directly addresses AI's dual role (tool vs. virtual worker) and its projected impact by 2030, aligning closely with the question's focus on AI's future capabilities and limitations.\n   - It integrates specific examples (e.g., drug development, climate modeling) and benchmarks (Epoch AI 57), demonstrating deep contextual understanding.\n\n2. **Specificity (Moderate, ~0.8)**:\n   - The answer provides concrete details (scaling trends, energy constraints, data availability) but avoids overgeneralization by acknowledging uncertainties (policy, ethics).\n   - The confidence score (0.7) is explicitly tied to the robustness of scaling trends while accounting for external variables, reflecting a balanced assessment.\n\n3. **Evidence and Sources (Strong, ~0.8)**:\n   - Cites credible sources (*AI in 2030*, Epoch AI reports, scaling laws), lending credibility to the claims.\n   - The moderate confidence (0.7) is justified by the answer\u2019s transparency about limitations (e.g., \"external factors remain uncertain\").\n\n**Final Confidence Estimate: 0.7** (Moderate-High)\nThe answer is highly relevant and specific but leaves room for uncertainty, making 0."
   },
   "analysis_agent": {
     "success": true,
-    "duration": 3.5409953594207764,
+    "duration": 2.307772159576416,
     "quality_score": 8.0
   },
   "workflow_agent": {
     "success": true,
-    "duration": 21.094489574432373,
+    "duration": 20.64600944519043,
     "quality_score": 7.0,
     "num_questions": 3,
     "num_answers": 3
   },
   "orchestrator": {
     "success": true,
-    "duration": 9.144739389419556,
-    "quality_score": 8.0,
+    "duration": 11.943729400634766,
+    "quality_score": 7.0,
     "steps_executed": [
       "summarizer",
       "analysis",
@@ -134,65 +120,65 @@ This report evaluates the Config, DocumentProcessor, ResearchGPTAssistant, and A
 
 ## Performance Benchmarks
 {
-  "document_processing_time": 153.58460235595703,
+  "document_processing_time": 165.1143090724945,
   "query_response_times": [
     {
       "query": "What are the main advantages of machine learning?",
       "strategy": "chain_of_thought",
-      "response_time": 3.0588645935058594,
-      "response_length": 1651
+      "response_time": 2.368460178375244,
+      "response_length": 1699
     },
     {
       "query": "What are the main advantages of machine learning?",
       "strategy": "basic_qa",
-      "response_time": 1.977233648300171,
-      "response_length": 1011
+      "response_time": 2.1846816539764404,
+      "response_length": 1066
     },
     {
       "query": "How do neural networks process information?",
       "strategy": "chain_of_thought",
-      "response_time": 2.6837573051452637,
-      "response_length": 1539
+      "response_time": 2.6662099361419678,
+      "response_length": 1615
     },
     {
       "query": "How do neural networks process information?",
       "strategy": "basic_qa",
-      "response_time": 0.7411904335021973,
+      "response_time": 0.8488121032714844,
       "response_length": 298
     }
   ],
   "agent_response_times": [
     {
       "agent": "summarizer",
-      "response_time": 0.0022764205932617188,
-      "response_length": 143
+      "response_time": 0.0010004043579101562,
+      "response_length": 121
     },
     {
       "agent": "qa_factual",
-      "response_time": 0.0064427852630615234,
+      "response_time": 0.006685733795166016,
       "response_length": 1002
     },
     {
       "agent": "analysis",
-      "response_time": 0.007832050323486328,
-      "response_length": 1334
+      "response_time": 0.006264686584472656,
+      "response_length": 1262
     },
     {
       "agent": "workflow",
-      "response_time": 11.006224393844604,
-      "response_length": 4841
+      "response_time": 9.586007356643677,
+      "response_length": 4932
     },
     {
       "agent": "complex_workflow",
-      "response_time": 5.19957709312439,
-      "response_length": 1339
+      "response_time": 4.894392728805542,
+      "response_length": 1252
     }
   ],
   "api_calls_made": 9,
   "memory_usage": "Not measured",
   "system_efficiency": {
-    "average_response_time": 2.742599858178033,
-    "queries_per_minute": 21.87705210480805
+    "average_response_time": 2.506946086883545,
+    "queries_per_minute": 23.93350232536819
   }
 }
 

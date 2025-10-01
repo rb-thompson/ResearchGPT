@@ -8,8 +8,9 @@ __pycache__/
 # ignore virtual environment directories
 venv/
 
-# ignore log files
+# ignore log files and notes
 *.log
+notes.md
 
 # ignore test data and results
 test_data/
