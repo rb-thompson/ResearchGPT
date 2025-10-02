@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import re
 from typing import Dict, Any, List
 import logging
 from logging import StreamHandler, Formatter
@@ -111,7 +112,7 @@ class SummarizationAgent(BaseAgent):
         """Create a literature overview from multiple documents."""
         self.logger.info(f"📚 Creating literature overview for {len(doc_ids)} documents")
         individual_summaries = []
-        for doc_id in doc_ids[:1]:  # Limit to 1 document for speed
+        for doc_id in doc_ids:  # Process all documents for comprehensive coverage
             summary = self.summarize_document(doc_id)
             individual_summaries.append(summary)
         
@@ -122,22 +123,23 @@ class SummarizationAgent(BaseAgent):
         - Note different methodologies
         - Highlight consistent findings vs contradictions
         - Suggest specific research gaps
-        Summaries: {summaries_text[:10000]}  # Limit input
+        Summaries: 
+        {summaries_text}
         """
         overview = self._call_mistral(overview_prompt)
-        # Truncate overview to 100-200 words
         overview_words = overview.split()
-        if len(overview_words) > 200:
-            overview = " ".join(overview_words[:200])
-            self.logger.warning("⚠️ Overview truncated to 200 words")
-        
-        result = {
-            "overview": overview,
-            "papers_analyzed": len(individual_summaries),
-            "individual_summaries": individual_summaries
-        }
-        self.logger.info("🌟 Literature overview completed!")
-        return result
+        if len(overview_words) > 350:
+            overview = " ".join(overview_words[:350])
+            self.logger.warning("⚠️ Overview truncated to 350 words")
+
+        overview_data = {
+                "num_documents": len(doc_ids),
+                "individual_summaries": individual_summaries,
+                "synthesized_overview": overview,
+                "word_count": len(overview.split())
+            }
+        self.logger.info(f"🌟 Literature overview completed! Covered {len(individual_summaries)} documents")
+        return overview_data
 
     def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
         if "doc_id" in task_input:
@@ -219,7 +221,7 @@ class QAAgent(BaseAgent):
         return self.answer_factual_question(question)
 
 class AnalysisAgent(BaseAgent):
-    """Agent for generating research insights and gaps."""
+    """Agent for generating research insights and identifying gaps."""
     
     def __init__(self, research_assistant: Any, suppress_base: bool = False) -> None:
         super().__init__(research_assistant, suppress_base)
@@ -227,36 +229,43 @@ class AnalysisAgent(BaseAgent):
         self.logger = setup_logger(self.agent_name)
         self.logger.info("🔍 AnalysisAgent ready to uncover insights!")
 
-    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze a topic for trends, gaps, and future directions."""
-        self.logger.info(f"🔍 Analyzing topic: {task_input.get('topic', '')}")
+    def analyze_topic(self, topic: str) -> Dict[str, Any]:
+        """Analyze a research topic for trends, gaps, and insights."""
+        self.logger.info(f"🔍 Analyzing topic: {topic}")
         try:
-            topic = task_input.get("topic", "")
-            relevant_chunks = self.assistant.doc_processor.find_similar_chunks(topic, top_k=5, min_score=0.1)
-            context = "\n".join([chunk[0] for chunk in relevant_chunks]) or "No relevant context found; provide general insights."
             analysis_prompt = f"""
-            Analyze the following context in 150-200 words, providing detailed insights:
-            - Identify key trends in the research with specific examples (e.g., applications or models)
-            - Highlight specific research gaps or unanswered questions with examples
-            - Suggest concrete future research directions with actionable steps
-            Context: {context[:10000]}  # Limit input
+            Provide a comprehensive analysis of the topic '{topic}' in 150-250 words.
+            Structure as: 
+            - Current Trends (2-3 key developments with examples)
+            - Research Gaps (2-3 unmet challenges)
+            - Future Directions (actionable recommendations)
+            Draw from AI/ML contexts like neural networks, ethics, or applications.
+            Ensure specific, evidence-based insights.
+            Topic: {topic}
+            Analysis:
             """
             analysis = self._call_mistral(analysis_prompt)
-            # Truncate analysis to 150-200 words
             analysis_words = analysis.split()
-            if len(analysis_words) > 200:
-                analysis = " ".join(analysis_words[:200])
-                self.logger.warning("⚠️ Analysis truncated to 200 words")
-            result = {
+            if len(analysis_words) > 250:
+                analysis = " ".join(analysis_words[:250])
+                self.logger.warning("⚠️ Analysis truncated to 250 words")
+            
+            analysis_data = {
                 "topic": topic,
                 "analysis": analysis,
-                "sources": [chunk[2] for chunk in relevant_chunks]
+                "word_count": len(analysis.split())
             }
             self.logger.info("🌟 Analysis generated!")
-            return result
+            return analysis_data
         except Exception as e:
             self.logger.error(f"❌ Error analyzing: {str(e)}")
             return {"error": str(e)}
+
+    def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
+        if "topic" in task_input:
+            return self.analyze_topic(task_input["topic"])
+        self.logger.error("❌ Invalid task input")
+        return {"error": "Invalid task input for AnalysisAgent"}
 
 class ResearchWorkflowAgent(BaseAgent):
     """Agent for managing complete research workflows."""
@@ -275,65 +284,85 @@ class ResearchWorkflowAgent(BaseAgent):
     def conduct_research_session(self, research_topic: str) -> Dict[str, Any]:
         """Conduct a complete research session on a topic (limited to 3 questions)."""
         self.logger.info(f"🧠 Starting research session on: {research_topic}")
-        session_results = {
-            "research_topic": research_topic,
-            "generated_questions": [],
-            "document_analysis": {},
-            "answers": [],
-            "research_gaps": []
-        }
         try:
-            # Step 1: Generate questions
+            # Step 1: Generate 3 analytical questions
             questions_prompt = f"""
-            Generate exactly 3 specific research questions for: {research_topic}
-            Format as a numbered list (1., 2., 3.).
-            Example:
-            1. How does X impact Y in context Z?
-            2. What are the limitations of X in application Y?
-            3. How can X be optimized for Z?
-            Ensure questions are specific, relevant to AI/ML, and diverse.
+            Generate exactly 3 analytical research questions for: '{research_topic}'.
+            Focus on AI applications, ethics, and optimization challenges.
+            Format as numbered list: 1. **Question?** 2. **Question?** 3. **Question?**
             """
-            questions_text = self._call_mistral(questions_prompt)
-            questions = [q.strip() for q in questions_text.split("\n") if q.strip() and q[0].isdigit()][:3]
+            questions_response = self._call_mistral(questions_prompt)
+            questions = re.findall(r'\d+\.\s*\*\*(.+?)\*\*', questions_response)
             if len(questions) < 3:
-                questions.extend([f"How can {research_topic} be applied in industry {i+1}?" for i in range(len(questions), 3)])
-            session_results["generated_questions"] = questions
+                questions = questions[:3]  # Fallback to available
             self.logger.info(f"❓ Generated {len(questions)} questions")
 
-            # Step 2: Summarize documents
-            relevant_docs = self.assistant.doc_processor.find_similar_chunks(research_topic, top_k=10, min_score=0.1)
-            doc_ids = list(set([doc[2] for doc in relevant_docs if doc[2].startswith("test_doc") or doc[2].startswith("2509")]))[:1]
-            if not doc_ids:
-                doc_ids = ["test_doc_1"]
-                self.logger.warning("⚠️ No relevant docs found; using default")
-            session_results["document_analysis"] = self.summarizer.create_literature_overview(doc_ids)
+            # Enhanced retrieval: Seed with topic, refine with questions
+            relevant_docs = set()
+
+            # Step 1: Broad topic search for seeds (low threshold)
+            topic_chunks = self.assistant.doc_processor.find_similar_chunks(research_topic, top_k=5, min_score=0.05)
+            for _, score, doc_id in topic_chunks:
+                if score > 0.05:
+                    relevant_docs.add(doc_id)
+                    self.logger.debug(f"Seed doc: {doc_id} (score: {score:.2f})")
+
+            # Step 2: Refine with questions (higher threshold for precision)
+            for q in questions:
+                q_chunks = self.assistant.doc_processor.find_similar_chunks(q, top_k=3, min_score=0.2)
+                for _, score, doc_id in q_chunks:
+                    if score > 0.2:
+                        relevant_docs.add(doc_id)
+                        self.logger.debug(f"Refined doc from '{q[:50]}...': {doc_id} (score: {score:.2f})")
+            
+            # Dedup and limit
+            relevant_docs = list(relevant_docs)[:5]
+
+            if not relevant_docs:
+                self.logger.warning("⚠️ No relevant docs found; using top 3 from full index")
+                # Fallback: Top docs by general relevance (e.g., search on "AI")
+                fallback_chunks = self.assistant.doc_processor.find_similar_chunks("AI machine learning", top_k=3, min_score=0.05)
+                relevant_docs = [chunk[2] for chunk, _, _ in fallback_chunks]
+            
+            self.logger.info(f"📚 Retrieved {len(relevant_docs)} docs: {relevant_docs}")
+
+            # Proceed with summarization (multi-doc capable)
+            overview = self.summarizer.create_literature_overview(relevant_docs)
             self.logger.info("📚 Document analysis completed")
 
-            # Step 3: Answer questions
-            for question in session_results["generated_questions"]:
-                qa_task = {"question": question, "type": "analytical"}
-                answer = self.qa_agent.execute_task(qa_task)
-                session_results["answers"].append(answer)
-                self.logger.info(f"❓ Answered: {question[:50]}...")
+            # Answer questions
+            answers = []
+            for i, q in enumerate(questions, 1):
+                answer = self.qa_agent.execute_task({"question": f"{i}. **{q}**", "type": "analytical"})
+                answers.append(answer)
+                self.logger.info(f"❓ Answered: {i}. **{q}**")
 
             # Step 4: Identify gaps
-            analysis_task = {"topic": research_topic}
-            gaps = self.analysis_agent.execute_task(analysis_task)
-            session_results["research_gaps"] = gaps.get("analysis", "")
+            analysis = self.analysis_agent.execute_task({"topic": research_topic})
             self.logger.info("🔍 Research gaps identified")
 
+            # Align keys with test expectations (non-None defaults)
+            session_results = {
+                "generated_questions": questions or [],  # Matches test
+                "document_analysis": overview or {},     # Matches test
+                "answers": answers or [],                # Matches
+                "research_gaps": analysis.get("analysis", "") or "No gaps identified",  # Matches; use string for verify_and_edit
+                "topic": research_topic,
+                "retrieved_docs": relevant_docs
+            }
             self.logger.info("🌟 Research session completed!")
             return session_results
+
         except Exception as e:
             self.logger.error(f"❌ Error in research session: {str(e)}")
-            return {"error": str(e)}
+            return {"error": str(e), "generated_questions": [], "document_analysis": {}, "answers": [], "research_gaps": "Error occurred"}
 
     def execute_task(self, task_input: Dict[str, Any]) -> Dict[str, Any]:
         if "research_topic" in task_input:
             return self.conduct_research_session(task_input["research_topic"])
         self.logger.error("❌ Invalid task input")
         return {"error": "Invalid task input for ResearchWorkflowAgent"}
-
+    
 class AgentOrchestrator(BaseAgent):
     """Orchestrates multiple agents for complex research tasks."""
     
@@ -409,8 +438,14 @@ class AgentOrchestrator(BaseAgent):
                 if not task:
                     continue
                 if "summarizer" in task and "summarizer" not in seen_tasks:
-                    tasks.append(("summarizer", {"doc_ids": ["test_doc_1"]}))
+                    relevant_chunks = self.assistant.doc_processor.find_similar_chunks(workflow_description, top_k=3, min_score=0.1)
+                    doc_ids = list(set([doc_id for _, _, doc_id in relevant_chunks]))  # Dedup with set
+                    if not doc_ids:
+                        doc_ids = ["test_doc_1"]
+                    doc_ids = doc_ids[:3]  # Cap uniques
+                    tasks.append(("summarizer", {"doc_ids": doc_ids}))
                     seen_tasks.add("summarizer")
+                    self.logger.debug(f"Dynamic unique docs for summarizer: {doc_ids}")
                 elif ("qa" in task or "question" in task or "answer" in task) and "qa" not in seen_tasks:
                     tasks.append(("qa", {"question": workflow_description, "type": "analytical"}))
                     seen_tasks.add("qa")
